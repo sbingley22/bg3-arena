@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+    <link rel="stylesheet" type="text/css" href="./src/style.css">
+  </head>
+  <body>
+    <div id="hud">
+      <p>Hold Person: * ? ~</p>
+      <p>Shield of Shar: ~ ? ~</p>
+      <p>Fireball: * # *</p>
+    </div>
+
+    <p id="hud-info"></p>
+
+    <button type="button" onmouseover="spellChant('*')" style="left: 5px; top: 25%;">*</button>
+    <button type="button" onmouseover="spellChant('~')" style="right: 5px; top: 25%;">~</button>
+    <button type="button" onmouseover="spellChant('#')" style="left: 5px; top: 75%;">#</button>
+    <button type="button" onmouseover="spellChant('?')" style="right: 5px; top: 75%;">?</button>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
