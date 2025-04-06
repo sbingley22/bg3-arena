@@ -28,7 +28,7 @@ body {
 .three-scene {
   margin: 0;
   padding: 0;
-  background: radial-gradient(circle, #a22 70%, #611);
+  background: radial-gradient(circle, #722 70%, #611);
 }
 
 button {
@@ -36,32 +36,51 @@ button {
   min-width: 100px;
   min-height: 100px;
   font-size: 5rem;
-  border-radius: 10px;
+  border-radius: 40%;
   background-color: #111;
 }
 button:hover {
   background-color: #a83;
 }
 
-#hud {
+.b1 {
+  left: 25%;
+  top: 20%;
+}
+.b2 {
+  left: 20%;
+  top: 35%;
+}
+.b3 {
+  left: 20%;
+  top: 50%;
+}
+.b4 {
+  left: 25%;
+  top: 65%;
+}
+
+#hud-spells {
   position: absolute;
   width: 100vw;
   display: flex;
   justify-content: center;
-  padding 20px;
+  padding: 0px;
   top: 0;
   left: 0;
+  background-color: #111;
+  border-radius: 0%;
 }
 
-#hud p {
-  font-size: 1.2rem;
+#hud-spells p {
+  font-size: 1.4rem;
   margin-right: 40px;
 }
 
 #hud-info {
   position: absolute;
   bottom: 0;
-  left: 0;
-  padding 20px;
-  font-size: 2rem;
+  left: 10%;
+  padding: 5px;
+  font-size: 5rem;
 }

@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="./src/style.css">
   </head>
   <body>
-    <div id="hud">
+    <div id="hud-spells">
       <p>Hold Person: * ? ~</p>
       <p>Shield of Shar: ~ ? ~</p>
       <p>Fireball: * # *</p>
@@ -16,10 +16,10 @@
 
     <p id="hud-info"></p>
 
-    <button type="button" onmouseover="spellChant('*')" style="left: 5px; top: 25%;">*</button>
-    <button type="button" onmouseover="spellChant('~')" style="right: 5px; top: 25%;">~</button>
-    <button type="button" onmouseover="spellChant('#')" style="left: 5px; top: 75%;">#</button>
-    <button type="button" onmouseover="spellChant('?')" style="right: 5px; top: 75%;">?</button>
+    <button type="button" onmouseover="spellChant('*')" class="b1">*</button>
+    <button type="button" onmouseover="spellChant('~')" class="b2">~</button>
+    <button type="button" onmouseover="spellChant('?')" class="b3">?</button>
+    <button type="button" onmouseover="spellChant('#')" class="b4">#</button>
 
     <script type="module" src="/src/main.js"></script>
   </body>

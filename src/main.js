@@ -38,56 +38,100 @@ const chars = []
 const charMixers = []
 
 character.loadModel(scene, chars, charMixers)
-createGround(scene)
+const ground = createGround(scene)
 
 // Raycaster for detecting clicks
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
+let lastLMBClickTime = 0;
 
-window.addEventListener('click', (event) => {
+window.addEventListener('mouseup', (event) => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
+  if (event.button === 2) {
+    chant = ""
+    hudInfo.innerText = chant
+    return
+  }
+
+  const currentTime = performance.now()
+  const clickTime = currentTime - lastLMBClickTime
+  if (clickTime > 200) return
+
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObject(chars[0], true);
+  const intersects = raycaster.intersectObject(ground, true);
 
   if (intersects.length > 0) {
-    character.playCharAnimation(charMixers, 0, "Sword Slash");
+    chars[0].userData.destination = intersects[0].point
   } else {
-    character.playCharAnimation(charMixers, 0, "Sword Idle");
+    chars[0].userData.destination = null
   }
-});
+})
+
+window.addEventListener('mousedown', (event) => {
+  if (event.button !== 0) return
+  const currentTime = performance.now()
+  lastLMBClickTime = currentTime
+})
 
 const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate)
-
-  character.aiTurn(chars)
-
   const delta = clock.getDelta()
+
+  character.playerUpdate(chars, charMixers, spellFlag, delta)
+  character.aiTurn(chars, delta)
+  updateGame()
+
   charMixers.forEach(m => m.update(delta))
   controls.update()
   //renderer.render(scene, camera)
   composer.render()
 }
 
-animate();
-
 const hudInfo = document.getElementById('hud-info')
 let chant = ""
+let spellShield = -1
+let spellFlag = null
+
+function updateGame() {
+  spellFlag = null
+
+  if (spellShield > 0) {
+    spellShield -= 1
+  }
+  if (spellShield === 0) {
+    spellShield = -99
+    spellFlag = "shield off"
+  }
+}
 
 function spellChant(word) {
+  if (word === chant.slice(-1)) return
   chant += word
 
-  if (chant === "*?~") console.log("Hold Spell")
-  else if (chant === "~?~") console.log("Shield")
-  else if (chant === "*#*") console.log("Fireball")
+  if (chant === "*?~") {
+    spellFlag = "cast hold"
+    chant = ""
+  }
+  else if (chant === "~?~") {
+    spellFlag = "shield on"
+    spellShield = 200
+    chant = ""
+  }
+  else if (chant === "*#*") {
+    spellFlag = "cast fireball"
+    chant = ""
+  }
 
   if (chant.length >= 3) chant = ""
 
   hudInfo.innerText = chant
 }
+
+animate()
 
 window.spellChant = spellChant
 

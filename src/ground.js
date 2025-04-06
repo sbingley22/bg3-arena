@@ -26,8 +26,11 @@ function createGround(scene) {
   groundMesh = new THREE.Mesh(geometry, material);
   groundMesh.rotation.x = -Math.PI / 2;  // Make it horizontal
   groundMesh.receiveShadow = true;
+  groundMesh.name = "ground"
 
   scene.add(groundMesh);
+
+  return groundMesh
 }
 
 export { createGround };
