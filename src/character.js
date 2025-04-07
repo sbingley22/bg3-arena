@@ -25,37 +25,37 @@ function loadModel(scene, chars, charMixers) {
     //console.log(charAnimations)
 
     // Shart
-    addCharacter(scene, chars, charMixers ,charModel, ["Ana", "Hair-Wavy", "Sword", "Shield"], [0,0,5], "Shadowheart", 0)
-    playCharAnimation(charMixers, 0, "Sword Idle")
+    addCharacter(scene, chars, charMixers ,charModel, ["Ana", "Hair-Wavy", "Sword", "Shield"], [0,0,5], "Shadowheart", 0, "all")
+    playCharAnimation(charMixers, 0, "Idle")
     chars[0].userData.speed = 2
     // Wyll
-    addCharacter(scene, chars, charMixers, charModel, ["Adam", "HairM-Mowhawk", "Sword"], [0,0,-20], "Wyll", 1)
-    playCharAnimation(charMixers, 1, "Sword Idle")
+    addCharacter(scene, chars, charMixers, charModel, ["Adam", "HairM-Mowhawk", "Sword"], [0,0,-20], "Wyll", 1, "melee")
+    playCharAnimation(charMixers, 1, "Idle")
     changeMeshColor(chars[1], "adam", new THREE.Color(0x996644))
     changeMeshColor(chars[1], "adam_1", new THREE.Color(0x995544))
     // Astarion
-    addCharacter(scene, chars, charMixers, charModel, ["Adam", "HairM-Mowhawk", "Pistol"], [-6,0,-30], "Astarion", 2)
-    playCharAnimation(charMixers, 2, "Sword Idle")
+    addCharacter(scene, chars, charMixers, charModel, ["Adam", "HairM-Mowhawk", "Pistol"], [-2,0,-21], "Astarion", 2, "archer")
+    playCharAnimation(charMixers, 2, "Idle")
     changeMeshColor(chars[2], "adam", new THREE.Color(0xEECCAA))
     changeMeshColor(chars[2], "adam_1", new THREE.Color(0x223344))
     changeMeshColor(chars[2], "HairM-Mowhawk", new THREE.Color(0x999999))
     // Gale
-    addCharacter(scene, chars, charMixers, charModel, ["Adam", "Hair-Wavy"], [6,0,-10], "Gale", 3)
+    addCharacter(scene, chars, charMixers, charModel, ["Adam", "Hair-Wavy"], [-3,0,-5], "Gale", 3, "mage")
     playCharAnimation(charMixers, 3, "Idle")
     changeMeshColor(chars[3], "adam_1", new THREE.Color(0x446688))
     // Karlack
-    addCharacter(scene, chars, charMixers ,charModel, ["Eve", "Hair-WavyPunk", "Sword"], [-3,0,-10], "Karlack", 4)
-    playCharAnimation(charMixers, 4, "Sword Idle")
+    addCharacter(scene, chars, charMixers ,charModel, ["Eve", "Hair-WavyPunk", "Sword"], [2.5,0,-20], "Karlack", 4, "melee")
+    playCharAnimation(charMixers, 4, "Idle")
     changeMeshColor(chars[4], "Eve", new THREE.Color(0xDD5544))
     // Lazel
-    addCharacter(scene, chars, charMixers ,charModel, ["Lisa", "Hair-Parted", "Sword"], [3,0,-2], "Lazel", 5)
-    playCharAnimation(charMixers, 5, "Sword Idle")
+    addCharacter(scene, chars, charMixers ,charModel, ["Lisa", "Hair-Parted", "Sword"], [3,0,-5], "Lazel", 5, "melee")
+    playCharAnimation(charMixers, 5, "Idle")
     changeMeshColor(chars[5], "Plane003", new THREE.Color(0x55AA44))
     changeMeshColor(chars[5], "Hair-Parted", new THREE.Color(0x332233))
   });
 }
 
-function addCharacter(scene, chars, charMixers, mod, show, pos, name, index) {
+function addCharacter(scene, chars, charMixers, mod, show, pos, name, index, combatType) {
   const clone = SkeletonUtils.clone(mod);
   clone.position.set(pos[0], pos[1], pos[2])
   showMeshes(clone, show)
@@ -65,7 +65,10 @@ function addCharacter(scene, chars, charMixers, mod, show, pos, name, index) {
   clone.userData.health = 100
   clone.userData.index = index
   clone.userData.speed = 1.0
-  scene.add(clone);
+  clone.userData.combatType = combatType
+  clone.userData.status = "neutral"
+
+  scene.add(clone)
   chars.push(clone)
 
   // Clone materials to prevent shared state
@@ -73,14 +76,14 @@ function addCharacter(scene, chars, charMixers, mod, show, pos, name, index) {
     if (child.isMesh && child.material) {
       // If the mesh has an array of materials
       if (Array.isArray(child.material)) {
-        child.material = child.material.map(mat => mat.clone());
+        child.material = child.material.map(mat => mat.clone())
       } else {
-        child.material = child.material.clone();
+        child.material = child.material.clone()
       }
     }
-  });
+  })
 
-  const cloneMixer = new THREE.AnimationMixer(clone);
+  const cloneMixer = new THREE.AnimationMixer(clone)
   cloneMixer.addEventListener('finished', (e) => {
     const finishedAction = e.action.getClip().name
     //console.log(charMixers)
@@ -223,7 +226,11 @@ function findNearestChar(i, chars) {
       nearestChar = index
     }
   })
-  return nearestChar
+  return [nearestChar, nearestDistance]
+}
+
+function distanceToPlayer(chars, ch) {
+  return ch.position.distanceTo(chars[0].position)
 }
 
 function sphereChange(ch, opacity, color) {
@@ -235,7 +242,22 @@ function sphereChange(ch, opacity, color) {
   });
 }
 
-function aiTurn(chars, delta) {
+function becomeHostile(chars, charMixers, c, i) {
+  c.userData.status = "hostile"
+  playCharAnimation(charMixers, i, "Sword Idle")
+
+  chars.forEach((ch, index) => {
+    if (index === i) return
+    if (ch.userData.health <= 0) return
+    const dist = ch.position.distanceTo(chars[i].position)
+    if (dist < 10) {
+      ch.userData.status = "hostile"
+      playCharAnimation(charMixers, index, "Sword Idle")
+    }
+  })
+}
+
+function aiTurn(chars, charMixers, delta) {
   for (let index = 1; index < chars.length; index++) {
     const c = chars[index];
 
@@ -253,7 +275,31 @@ function aiTurn(chars, delta) {
 
     if (c.userData.health <= 0) continue
 
-    rotateToFace(c, chars[0])
+    if (c.userData.status === "hostile") {
+      hostileAi(chars, charMixers, c, index, delta)
+    } else {
+      const dist = distanceToPlayer(chars, c)
+      if (dist < 10) becomeHostile(chars, charMixers, c, index)
+    }
+  }
+}
+
+function hostileAi(chars, charMixers, c, index, delta) {
+  rotateToFace(c, chars[0])
+
+  const combatType = c.userData.combatType
+  if (combatType === "mage") {
+    if (moveTo(c, chars[0].position, 5, delta)) {
+      // in striking range
+      if (charActiveAction[index].getClip().name === "Sword Idle") {
+        playCharAnimation(charMixers, index, "Fight Jab")
+      }
+    }
+  }
+  else if (combatType === "archer") {
+    moveTo(c, chars[0].position, 8, delta)
+  }
+  else {
     moveTo(c, chars[0].position, 1, delta)
   }
 }
@@ -262,6 +308,7 @@ function playerUpdate(chars, charMixers, spellFlag, delta) {
   if (chars.length < 1) return
   const p = chars[0]
 
+  // Cast spells
   if (spellFlag === "shield on") {
     changeMeshColor(p, "Shield", new THREE.Color(0x5533FF), 1)
   }
@@ -269,27 +316,30 @@ function playerUpdate(chars, charMixers, spellFlag, delta) {
     changeMeshColor(p, "Shield", new THREE.Color(0x332211), 1)
   }
   else if (spellFlag === "cast fireball") {
-    const ci = findNearestChar(0, chars)
-    if (ci != -1) {
+    const [ci,cd] = findNearestChar(0, chars)
+    if (ci != -1 && cd < 5) {
       playCharAnimation(charMixers, 0, "Fight Jab")
       rotateToFace(p, chars[ci])
-      chars[ci].userData.health -= 35
-      if (chars[ci].userData.health <= 0) playCharAnimation(charMixers, ci, "Die")
-      else playCharAnimation(charMixers, ci, "Take Damage")
-      chars[ci].userData.burning = 30
-      sphereChange(chars[ci], 0.4, 0xFFAA22)
+      p.userData.destination = null
+      setTimeout(() => {
+        damageChar(chars, charMixers, ci, 35)
+        chars[ci].userData.burning = 30
+        sphereChange(chars[ci], 0.4, 0xFFAA22)
+      }, 200);
     }
   }
   else if (spellFlag === "cast hold") {
-    const ci = findNearestChar(0, chars)
-    if (ci != -1) {
+    const [ci,cd] = findNearestChar(0, chars)
+    if (ci != -1 && cd < 5) {
       rotateToFace(p, chars[ci])
       playCharAnimation(charMixers, 0, "Fight Jab")
       chars[ci].userData.held = 300
       sphereChange(chars[ci], 0.6, 0x224499)
+      p.userData.destination = null
     }
   }
 
+  // Move to destination
   if (p.userData.destination && p.userData.destination !== null) {
     if (moveTo(p, p.userData.destination, 0.05, delta)) {
       playCharAnimation(charMixers, 0, "Sword Idle")
@@ -300,6 +350,23 @@ function playerUpdate(chars, charMixers, spellFlag, delta) {
       rotateToPos(p, p.userData.destination)
     }
   }
+  else {
+    //try attacking
+    const [ci,cd] = findNearestChar(0, chars)
+    if (ci != -1 && cd <= 1 && charActiveAction[0].getClip().name === "Sword Idle") {
+      playCharAnimation(charMixers, 0, "Sword Slash")
+      rotateToFace(p, chars[ci])
+      setTimeout(() => {
+        damageChar(chars, charMixers, ci, 20)
+      }, 200);
+    }
+  }
+}
+
+function damageChar(chars, charMixers, ci, dmg) {
+  chars[ci].userData.health -= dmg
+  if (chars[ci].userData.health <= 0) playCharAnimation(charMixers, ci, "Die")
+  else playCharAnimation(charMixers, ci, "Take Damage")
 }
 
 export {
@@ -311,4 +378,4 @@ export {
   aiTurn,
   playerUpdate,
   moveTo,
-};
+}

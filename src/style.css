@@ -8,7 +8,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #000;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,13 +22,17 @@ body {
   display: flex;
   place-items: center;
   min-width: 320px;
+  max-width: 1080px;
   min-height: 100vh;
+  position: relative;
+  margin: auto;
+  background-color: #000;
 }
 
 .three-scene {
   margin: 0;
   padding: 0;
-  background: radial-gradient(circle, #722 70%, #611);
+  background: radial-gradient(circle, #020 , #000);
 }
 
 button {
@@ -44,25 +48,25 @@ button:hover {
 }
 
 .b1 {
-  left: 25%;
-  top: 20%;
+  left: 15%;
+  top: 10%;
 }
 .b2 {
-  left: 20%;
-  top: 35%;
+  left: 5%;
+  top: 25%;
 }
 .b3 {
-  left: 20%;
-  top: 50%;
+  left: 5%;
+  top: 40%;
 }
 .b4 {
-  left: 25%;
-  top: 65%;
+  left: 15%;
+  top: 55%;
 }
 
 #hud-spells {
   position: absolute;
-  width: 100vw;
+  width: 100%;
   display: flex;
   justify-content: center;
   padding: 0px;
@@ -80,7 +84,14 @@ button:hover {
 #hud-info {
   position: absolute;
   bottom: 0;
-  left: 10%;
+  right: 10%;
   padding: 5px;
   font-size: 5rem;
+}
+
+.char-face {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 25%;
 }
