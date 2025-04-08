@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import trees from './assets/trees.png';
+import mountains from './assets/avernous.png'
+import city from './assets/medieval-village.png'
 
 let backgroundMesh;
 
 function createBackground(scene, img, pos, rot, scale, wrap, col) {
   const textureLoader = new THREE.TextureLoader();
-  const texture = textureLoader.load(trees);
+  const bgImg = img === 'forest' ? trees : img === 'avernus' ? mountains : city
+  const texture = textureLoader.load(bgImg);
 
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping
   texture.repeat.set(wrap[0], wrap[1])

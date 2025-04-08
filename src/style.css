@@ -95,3 +95,138 @@ button:hover {
   left: 0;
   width: 25%;
 }
+
+.cutscene {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 1.6rem;
+}
+
+.cutscene img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cutscene div {
+  padding: 4%;
+}
+
+#main-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
+  font-size: 1.6rem;
+}
+
+#main-menu div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 100%;
+  padding: 5px;
+}
+
+#main-menu button {
+  position: relative;
+  background-color: black;
+  border-radius: 5%;
+}
+
+#main-menu img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  #main-menu {
+    font-size: 1rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 2fr;
+    max-height: 100vh
+  }
+
+  #main-menu button {
+    font-size: 1rem;
+    padding: 2px;
+    margin: 0px;
+    height: auto;
+    width: 100%;
+  }
+
+  #main-menu img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .cutscene {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50vh 50vh;
+    font-size: 1.0rem;
+  }
+
+  .cutscene img {
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  button {
+    position: absolute;
+    min-width: 50px;
+    min-height: 50px;
+    font-size: 1.2rem;
+    border-radius: 40%;
+    background-color: #111;
+  }
+
+  .b1 {
+    left: 15%;
+    top: 35%;
+  }
+  .b2 {
+    left: 5%;
+    top: 45%;
+  }
+  .b3 {
+    left: 5%;
+    top: 55%;
+  }
+  .b4 {
+    left: 15%;
+    top: 65%;
+  }
+
+  #hud-spells {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0px;
+    margin: 0;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    border-radius: 0%;
+  }
+
+  #hud-spells p {
+    font-size: 0.8rem;
+    margin-right: 8px;
+  }
+
+  #hud-info {
+    font-size: 4rem;
+  }
+
+  .char-face {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 45%;
+  }
+}

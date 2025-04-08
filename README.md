@@ -11,5 +11,3 @@ Magic slowly replenishes.
 Get ai to attack.
 Possibly introduce 2 more levels (town, cave)
 Add drow and goblins as basic grunts.
-Add menu screen.
-Add levels and cutscenes seperating them.

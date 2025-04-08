@@ -12,11 +12,12 @@
       <div id="hud-spells">
         <p>Hold Person: * ? ~</p>
         <p>Shield of Shar: ~ ? ~</p>
-        <p>Fireball: * # *</p>
+        <p>Fireball: * ~ ?</p>
       </div>
 
       <p id="hud-info"></p>
 
+      <!--<button type="button" ontouchstart="spellChant('*')" onmouseover="spellChant('*')" class="b1">*</button>-->
       <button type="button" onmouseover="spellChant('*')" class="b1">*</button>
       <button type="button" onmouseover="spellChant('~')" class="b2">~</button>
       <button type="button" onmouseover="spellChant('?')" class="b3">?</button>
@@ -26,11 +27,59 @@
     </div>
 
     <div id="cutscenes">
-      <p>cutscene</p>
+      <div id="cutscene-1" class="cutscene" onclick="startLevel(2)">
+        <img src="./astarion-full.png" alt="">
+        <div>
+          <p>Lady Shaar wants me to kill the vampire spawn known as Astarion.</p>
+          <p>The Illithid parasite in his head is controlled by the absolute. The absolute would destroy Lady Shaar and all her worshipers. I cannot let this happen!</p>
+          <p>"So the Lady of darkness herself wants me dead? Well two can play at that game dear."</p>
+        </div>
+      </div>
+
+      <div id="cutscene-3" class="cutscene" onclick="startLevel(4)">
+        <img src="./karlach-full.png" alt="">
+        <div>
+            <p>To think of Lady Shaars glee with Astarions death overfilled me with joy but the sharp burning pain in my hand has brought me crashing back down to earth.</p>
+            <p>I was too sloppy, I must do better!</p>
+            <p>I'm next tasked with taking down Karlach, a devils Lacky. She's a brute nothing more.</p>
+            <p>I need to be wary of a member of the Blade of Frontiers who is tracking her down though.</p>
+            <p>"So another chumps come to take me down then? Ha, Let 'em try!"</p>
+        </div>
+      </div>
+
+      <div id="cutscene-5" class="cutscene" onclick="startLevel(6)">
+        <img src="./astarion-full.png" alt="">
+        <div>
+          <p>That was tough. Can't believe I got out alive.</p>
+          <p>The Blade of Frontiers, Demons, Devils, and that Barbarian Karlach.</p>
+          <p>Lady Shaar must be watching over me!</p>
+          <p>Now it's just the magician Gale and his cheap tricks.</p>
+          <p>I have to watch out though, he's somehow convinced the Githraki to be his bodyguard.</p>
+          <p>This Laz'el must have been brainwashed by one of his spells.</p>
+        </div>
+      </div>
+
+      <div id="cutscene-7" class="cutscene" onclick="startLevel(0)">
+        <img src="./karlach-full.png" alt="">
+        <div>
+          <p>I did it!</p>
+          <p>I defeated them!</p>
+          <p>I will finally become a Dark Justisier!</p>
+          <p>But why does the pain in my hand persist?</p>
+        </div>
+      </div>
     </div>
 
     <div id="main-menu">
-      <h1>Baldurs Arena</h1>
+      <div>
+        <h1>Baldurs Arena: Shadowheart</h1>
+        <span>
+          <p>Shadowheart has been tasked by Lady Shaar to eliminate enemies of the dark.</p>
+          <p>Cast spells by hovering over the correct syllabuls. RMB to cancel current chant.</p>
+        </span>
+        <button type="button" onclick="startLevel(1)">Begin</button>
+      </div>
+      <img src="./shart-full.png" alt="">
     </div>
 
     <script type="module" src="/src/main.js"></script>

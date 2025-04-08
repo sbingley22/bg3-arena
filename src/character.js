@@ -6,12 +6,12 @@ import glb from "./assets/characters.glb?url"
 import { createShadow } from "./shadow.js"
 import { createSphere } from "./sphere.js"
 
-const charActiveAction = []
-const charPreviousAction = []
+let charActiveAction = []
+let charPreviousAction = []
 let charAnimations = {}
 let charModel
 
-function loadModel(scene, chars, charMixers) {
+function loadModel(scene, chars, charMixers, level) {
   const loader = new GLTFLoader();
 
   loader.load(glb, (gltf) => {
@@ -23,41 +23,107 @@ function loadModel(scene, chars, charMixers) {
       charAnimations[clip.name] = clip;
     });
     //console.log(charAnimations)
+    console.log(chars, charMixers, level, charActiveAction, charPreviousAction, charAnimations)
 
+    let charIndex = 0
     // Shart
-    addCharacter(scene, chars, charMixers ,charModel, ["Ana", "Hair-Wavy", "Sword", "Shield"], [0,0,5], "Shadowheart", 0, "all")
-    playCharAnimation(charMixers, 0, "Idle")
-    chars[0].userData.speed = 2
+    const posZ = level === 2 ? 3 : level === 4 ? 5 : 6
+    addCharacter(scene, chars, charMixers ,charModel, ["Ana", "Hair-Wavy", "Sword", "Shield"], [0,0,posZ], "Shadowheart", charIndex, "all")
+    playCharAnimation(charMixers, charIndex, "Idle")
+    chars[charIndex].userData.speed = 2
+    charIndex += 1
     // Wyll
-    addCharacter(scene, chars, charMixers, charModel, ["Adam", "HairM-Mowhawk", "Sword"], [0,0,-20], "Wyll", 1, "melee")
-    playCharAnimation(charMixers, 1, "Idle")
-    changeMeshColor(chars[1], "adam", new THREE.Color(0x996644))
-    changeMeshColor(chars[1], "adam_1", new THREE.Color(0x995544))
+    if (level === 4) {
+      addCharacter(scene, chars, charMixers, charModel, ["Adam", "HairM-Mowhawk", "Sword"], [0,0,-5], "Wyll", charIndex, "melee")
+      playCharAnimation(charMixers, charIndex, "Idle")
+      changeMeshColor(chars[charIndex], "adam", new THREE.Color(0x996644))
+      changeMeshColor(chars[charIndex], "adam_1", new THREE.Color(0x995544))
+      charIndex += 1
+    }
     // Astarion
-    addCharacter(scene, chars, charMixers, charModel, ["Adam", "HairM-Mowhawk", "Pistol"], [-2,0,-21], "Astarion", 2, "archer")
-    playCharAnimation(charMixers, 2, "Idle")
-    changeMeshColor(chars[2], "adam", new THREE.Color(0xEECCAA))
-    changeMeshColor(chars[2], "adam_1", new THREE.Color(0x223344))
-    changeMeshColor(chars[2], "HairM-Mowhawk", new THREE.Color(0x999999))
+    if (level === 2) {
+      addCharacter(scene, chars, charMixers, charModel, ["Adam", "HairM-Mowhawk", "Pistol"], [-2,0,-21], "Astarion", charIndex, "archer", [1,0.9,1])
+      playCharAnimation(charMixers, charIndex, "Idle")
+      changeMeshColor(chars[charIndex], "adam", new THREE.Color(0xEECCAA))
+      changeMeshColor(chars[charIndex], "adam_1", new THREE.Color(0x223344))
+      changeMeshColor(chars[charIndex], "HairM-Mowhawk", new THREE.Color(0x999999))
+      charIndex += 1
+    }
     // Gale
-    addCharacter(scene, chars, charMixers, charModel, ["Adam", "Hair-Wavy"], [-3,0,-5], "Gale", 3, "mage")
-    playCharAnimation(charMixers, 3, "Idle")
-    changeMeshColor(chars[3], "adam_1", new THREE.Color(0x446688))
+    if (level === 6) {
+      addCharacter(scene, chars, charMixers, charModel, ["Adam", "Hair-Wavy"], [-1,0,-27], "Gale", charIndex, "mage")
+      playCharAnimation(charMixers, charIndex, "Idle")
+      changeMeshColor(chars[charIndex], "adam_1", new THREE.Color(0x446688))
+      charIndex += 1
+    }
     // Karlack
-    addCharacter(scene, chars, charMixers ,charModel, ["Eve", "Hair-WavyPunk", "Sword"], [2.5,0,-20], "Karlack", 4, "melee")
-    playCharAnimation(charMixers, 4, "Idle")
-    changeMeshColor(chars[4], "Eve", new THREE.Color(0xDD5544))
+    if (level === 4) {
+      addCharacter(scene, chars, charMixers ,charModel, ["Eve", "Hair-WavyPunk", "Sword"], [0.5,0,-25], "Karlack", charIndex, "melee", [1.1,1.1,1.1])
+      playCharAnimation(charMixers, charIndex, "Idle")
+      changeMeshColor(chars[charIndex], "Eve", new THREE.Color(0xDD5544))
+      charIndex += 1
+    }
     // Lazel
-    addCharacter(scene, chars, charMixers ,charModel, ["Lisa", "Hair-Parted", "Sword"], [3,0,-5], "Lazel", 5, "melee")
-    playCharAnimation(charMixers, 5, "Idle")
-    changeMeshColor(chars[5], "Plane003", new THREE.Color(0x55AA44))
-    changeMeshColor(chars[5], "Hair-Parted", new THREE.Color(0x332233))
+    if (level === 6) {
+      addCharacter(scene, chars, charMixers ,charModel, ["Lisa", "Hair-Parted", "Sword"], [3,0,-27], "Lazel", charIndex, "melee")
+      playCharAnimation(charMixers, charIndex, "Idle")
+      changeMeshColor(chars[charIndex], "Plane003", new THREE.Color(0x55AA44))
+      changeMeshColor(chars[charIndex], "Hair-Parted", new THREE.Color(0x332233))
+      charIndex += 1
+    }
+
+    // Grunts
+    if (level === 2) {
+      const vamps = [[3,0,-7], [2.5, 0, -20], [0, 0, -19]]
+      vamps.forEach((v,index) => {
+        addCharacter(scene, chars, charMixers ,charModel, ["Lisa", "Hair-Parted", "Sword"], v, "vamp", charIndex, "melee", [1, 0.8, 1])
+        playCharAnimation(charMixers, charIndex, "Idle")
+        changeMeshColor(chars[charIndex], "Plane003", new THREE.Color(0x99DDFF))
+        changeMeshColor(chars[charIndex], "Hair-Parted", new THREE.Color(0x332233))
+        charIndex += 1
+      })
+      const vamps2 = [[-3,0,-7]]
+      vamps2.forEach((v,index) => {
+        addCharacter(scene, chars, charMixers, charModel, ["Adam", "Pistol"], v, "vamp2", charIndex, "archer", [1, 1.1, 1])
+        playCharAnimation(charMixers, charIndex, "Idle")
+        changeMeshColor(chars[charIndex], "adam", new THREE.Color(0x8888AA))
+        changeMeshColor(chars[charIndex], "adam_1", new THREE.Color(0x99AA99))
+        charIndex += 1
+      })
+    }
+    else if (level === 4) {
+      const blades = [[3,0,-7], [-3,0,-7]]
+      blades.forEach((v,index) => {
+        addCharacter(scene, chars, charMixers ,charModel, ["Adam", "Pistol"], v, "Blade", charIndex, "archer", [1, 0.98, 1])
+        playCharAnimation(charMixers, charIndex, "Idle")
+        charIndex += 1
+      })
+      const demons = [[-3,0,-20], [2.5, 0, -20], [0, 0, -19]]
+      demons.forEach((v,index) => {
+        addCharacter(scene, chars, charMixers, charModel, ["Eve"], v, "Demon", charIndex, "mage", [0.8, 0.7, 0.8])
+        playCharAnimation(charMixers, charIndex, "Idle")
+        changeMeshColor(chars[charIndex], "Eve", new THREE.Color(0xaa5544))
+        charIndex += 1
+      })
+    }
+    else if (level === 6) {
+      const gith = [[0,0,-0], [3,0,-4], [4,0,-10], [-3,0,-7], [2,0,-16], [-3,0,-22]]
+      gith.forEach((v,index) => {
+        addCharacter(scene, chars, charMixers ,charModel, ["Ana", "Hair-TiedBack", "Sword", "Shield"], v, "Shadowheart", charIndex, "melee", [0.9,0.95,0.9])
+        playCharAnimation(charMixers, charIndex, "Idle")
+        changeMeshColor(chars[charIndex], "ana", new THREE.Color(0x55aa44))
+        changeMeshColor(chars[charIndex], "ana_1", new THREE.Color(0xaabbcc))
+        charIndex += 1
+      })
+    }
+
   });
 }
 
-function addCharacter(scene, chars, charMixers, mod, show, pos, name, index, combatType) {
+function addCharacter(scene, chars, charMixers, mod, show, pos, name, index, combatType, scale=[1,1,1]) {
   const clone = SkeletonUtils.clone(mod);
   clone.position.set(pos[0], pos[1], pos[2])
+  clone.scale.set(...scale)
   showMeshes(clone, show)
   createShadow(clone)
   createSphere(clone)
@@ -67,6 +133,7 @@ function addCharacter(scene, chars, charMixers, mod, show, pos, name, index, com
   clone.userData.speed = 1.0
   clone.userData.combatType = combatType
   clone.userData.status = "neutral"
+  //console.log(clone)
 
   scene.add(clone)
   chars.push(clone)
@@ -99,7 +166,7 @@ function addCharacter(scene, chars, charMixers, mod, show, pos, name, index, com
 function animHierachy(currentAnim, anim) {
   const basic = ["Idle", "Jogging", "Walking", "Pistol Aim", "Pistol Idle"]
   const medium = ["Pistol Fire", "Fight Jab", "Take Damage", "Sword Slash"]
-  if (currentAnim === "Die") return
+  if (currentAnim === "Die") return false
   if (basic.includes(currentAnim)) return true
   if (basic.includes(anim) && medium.includes(currentAnim)) return false
   return true
@@ -107,7 +174,10 @@ function animHierachy(currentAnim, anim) {
 
 // Function to play an animation by name with fade effect
 function playCharAnimation(charMixers, index, name) {
-  if (charMixers.length <= index) return
+  if (charMixers.length <= index) {
+    console.warn("index is bigger than char mixers length")
+    return
+  }
   const mixer = charMixers[index]
   if (!mixer || !charAnimations[name]) {
     console.warn(`Animation "${name}" not found`);
@@ -317,7 +387,7 @@ function playerUpdate(chars, charMixers, spellFlag, delta) {
   }
   else if (spellFlag === "cast fireball") {
     const [ci,cd] = findNearestChar(0, chars)
-    if (ci != -1 && cd < 5) {
+    if (ci != -1 && cd < 6) {
       playCharAnimation(charMixers, 0, "Fight Jab")
       rotateToFace(p, chars[ci])
       p.userData.destination = null
@@ -353,7 +423,7 @@ function playerUpdate(chars, charMixers, spellFlag, delta) {
   else {
     //try attacking
     const [ci,cd] = findNearestChar(0, chars)
-    if (ci != -1 && cd <= 1 && charActiveAction[0].getClip().name === "Sword Idle") {
+    if (ci != -1 && cd <= 1.5 && charActiveAction[0].getClip().name === "Sword Idle") {
       playCharAnimation(charMixers, 0, "Sword Slash")
       rotateToFace(p, chars[ci])
       setTimeout(() => {
@@ -369,6 +439,12 @@ function damageChar(chars, charMixers, ci, dmg) {
   else playCharAnimation(charMixers, ci, "Take Damage")
 }
 
+function resetGlobals() {
+  charActiveAction = []
+  charPreviousAction = []
+  charAnimations = {}
+}
+
 export {
   loadModel,
   playCharAnimation,
@@ -378,4 +454,5 @@ export {
   aiTurn,
   playerUpdate,
   moveTo,
+  resetGlobals,
 }

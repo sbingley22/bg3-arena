@@ -5,11 +5,11 @@ import * as character from "./character.js"
 import { createGround } from './ground.js';
 import { createBackground } from './background.js'
 
-let scene;
-let renderer;
-let animationFrameId;
+let scene
+let renderer
+let animationFrameId
 
-function runGame(level = 1) {
+function runGame(startLevel, level = 1) {
   const width = document.body.clientWidth // window.innerWidth
   const height = document.body.clientHeight // window.innerHeight
   scene = new THREE.Scene();
@@ -47,46 +47,106 @@ function runGame(level = 1) {
   const chars = []
   const charMixers = []
 
-  character.loadModel(scene, chars, charMixers)
-  const ground = createGround(scene)
-  createBackground(scene, "trees.png", [8,10,-10], [0,-Math.PI/2,0], [30,30], [3,1], [0.4,0.4,0.4])
-  createBackground(scene, "trees.png", [-8,10,-10], [0,Math.PI/2,0], [30,30], [3,1], [0.4,0.4,0.4])
-  createBackground(scene, "trees.png", [0,10,-28], [0,0,0], [30,30], [3,1], [0.4,0.4,0.4])
+  character.resetGlobals()
+  character.loadModel(scene, chars, charMixers, level)
+  const bg = level === 4 ? "avernus" : level === 6 ? "forest" : "city"
+  const ground = createGround(scene, bg)
+  if (bg === "avernus") {
+    renderer.domElement.style = "background: #500;"
+    createBackground(scene, bg, [8,8,-10], [0,-Math.PI/2,0], [50,20], [1,1], [1.9,0.7,0.7])
+    createBackground(scene, bg, [-8,8,-10], [0,Math.PI/2,0], [50,20], [1,1], [1.9,0.7,0.7])
+    createBackground(scene, bg, [0,8,-48], [0,0,0], [30,20], [1,1], [1.9,0.7,0.7])
+    createBackground(scene, bg, [0,8,12], [0,Math.PI,0], [30,20], [1,1], [1.9,0.7,0.7])
+  }
+  else if (bg === "forest") {
+    createBackground(scene, bg, [8,10,-10], [0,-Math.PI/2,0], [60,27], [3,1], [0.4,0.4,0.4])
+    createBackground(scene, bg, [-8,10,-10], [0,Math.PI/2,0], [60,27], [3,1], [0.4,0.4,0.4])
+    createBackground(scene, bg, [0,10,-68], [0,0,0], [60,27], [3,1], [0.4,0.4,0.4])
+    createBackground(scene, bg, [0,10,16], [0,Math.PI,0], [60,27], [3,1], [0.4,0.4,0.4])
+  }
+  else {
+    renderer.domElement.style = "background: #321;"
+    const col = [0.7,0.7,0.7]
+    createBackground(scene, bg, [10,11,-10], [0,-Math.PI/2,0], [35,25], [1,1], col)
+    createBackground(scene, bg, [-10,11,-10], [0,Math.PI/2,0], [35,25], [1,1], col)
+    createBackground(scene, bg, [0,11,-28], [0,0,0], [30,25], [1,1], col)
+    createBackground(scene, bg, [0,11,8], [0,Math.PI,0], [30,25], [1,1], col)
+  }
 
   // Raycaster for detecting clicks
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  let lastLMBClickTime = 0;
+  let lastClickTime = 0
 
-  window.addEventListener('mouseup', (event) => {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  function handleInputStart(event) {
+    // Prevent default touch behavior (like scrolling)
+    event.preventDefault();
 
-    if (event.button === 2) {
-      chant = ""
-      hudInfo.innerText = chant
-      return
+    let clientX, clientY;
+
+    if (event.touches) {
+      // Touch event
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+    } else {
+      // Mouse event
+      if (event.button !== 0) return; // Only left mouse button
+      clientX = event.clientX;
+      clientY = event.clientY;
     }
 
-    const currentTime = performance.now()
-    const clickTime = currentTime - lastLMBClickTime
-    if (clickTime > 200) return
+    const currentTime = performance.now();
+    lastClickTime = currentTime;
+  }
+
+  function handleInputEnd(event) {
+    event.preventDefault(); // Prevent default touch behavior
+
+    let clientX, clientY;
+
+    if (event.changedTouches) {
+      // Touch event
+      clientX = event.changedTouches[0].clientX;
+      clientY = event.changedTouches[0].clientY;
+    } else {
+      // Mouse event
+      if (event.button === 2) {
+        chant = "";
+        hudInfo.innerText = chant;
+        return;
+      }
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+
+    mouse.x = (clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
+    const currentTime = performance.now();
+    const clickTime = currentTime - lastClickTime;
+    if (clickTime > 200) return;
 
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObject(ground, true);
 
     if (intersects.length > 0) {
-      chars[0].userData.destination = intersects[0].point
+      chars[0].userData.destination = intersects[0].point;
     } else {
-      chars[0].userData.destination = null
+      chars[0].userData.destination = null;
     }
-  })
+  }
 
-  window.addEventListener('mousedown', (event) => {
-    if (event.button !== 0) return
-    const currentTime = performance.now()
-    lastLMBClickTime = currentTime
-  })
+  const canvas = renderer.domElement; // Get your Three.js canvas element
+  //canvas.addEventListener('touchmove', (event) => {
+  //  event.preventDefault();
+  //}, { passive: false });
+
+  // Add event listeners for both mouse and touch
+  canvas.addEventListener('mouseup', handleInputEnd);
+  canvas.addEventListener('mousedown', handleInputStart);
+
+  canvas.addEventListener('touchend', handleInputEnd);
+  canvas.addEventListener('touchstart', handleInputStart, { passive: false }); // passive: false is important to allow preventDefault()
 
   const clock = new THREE.Clock();
 
@@ -109,6 +169,7 @@ function runGame(level = 1) {
   let chant = ""
   let spellShield = -1
   let spellFlag = null
+  let allEnemiesDead = false
 
   function updateGame() {
     spellFlag = null
@@ -119,6 +180,30 @@ function runGame(level = 1) {
     if (spellShield === 0) {
       spellShield = -99
       spellFlag = "shield off"
+    }
+
+    //Check for game over
+    if (!allEnemiesDead && chars.length > 1) {
+      let aliveEnemy = 0
+      chars.forEach((c,index) => {
+        if (index === 0) return
+        if (c.userData.health && c.userData.health > 0) aliveEnemy += 1
+      })
+      if (aliveEnemy === 0) {
+        allEnemiesDead = true
+        setTimeout(() => {
+          startLevel(level + 1)
+        }, 1200);
+      }
+    }
+    else {
+      if (chars.length > 0) {
+        if (chars[0].userData.health <= 0) {
+          setTimeout(() => {
+            startLevel(0)
+          }, 1200);
+        }
+      }
     }
   }
 
@@ -135,7 +220,7 @@ function runGame(level = 1) {
       spellShield = 200
       chant = ""
     }
-    else if (chant === "*#*") {
+    else if (chant === "*~?") {
       spellFlag = "cast fireball"
       chant = ""
     }
@@ -184,13 +269,11 @@ function runGame(level = 1) {
 function removeScene() {
   const container = document.getElementById('three-game');
   const canvas = container ? container.querySelector('canvas') : null;
-
   // 1. Stop animation loop (assuming you have animationFrameId)
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
     animationFrameId = null;
   }
-
   // 2. Dispose of resources
   if (scene) {
     scene.traverse(function (object) {
@@ -206,32 +289,25 @@ function removeScene() {
       }
       if (object.material && object.material.map) object.material.map.dispose();
       if (object.material && object.material.normalMap) object.material.normalMap.dispose();
-      // Dispose of other textures as needed
     });
   }
-
   // 3. Remove event listeners
   if (canvas) {
     // Remove any event listeners attached to the canvas or window
     window.removeEventListener('resize', onWindowResize);
-    // canvas.removeEventListener('click', handleClick);
-    // ... other listeners
+    window.removeEventListener('mousedown');
+    window.removeEventListener('mouseup');
   }
-
   // 4. Dispose of the renderer
   if (renderer) {
     renderer.dispose();
     renderer = null;
   }
-
   // 5. Remove the container (and its children, including the canvas) from the DOM
   if (container && container.parentNode) {
     container.parentNode.removeChild(container);
   }
-
-  // Optionally, clear references to scene and other Three.js objects
   scene = null;
-  // ... other Three.js object references = null;
 }
 
 export {
