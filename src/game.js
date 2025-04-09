@@ -9,7 +9,7 @@ let scene
 let renderer
 let animationFrameId
 
-function runGame(startLevel, level = 1) {
+function runGame(startLevel, level = 1, retro = false, boomer = false, noise = false) {
   const width = document.body.clientWidth // window.innerWidth
   const height = document.body.clientHeight // window.innerHeight
   scene = new THREE.Scene();
@@ -23,8 +23,14 @@ function runGame(startLevel, level = 1) {
   renderer.domElement.classList.add('three-scene')
   renderer.domElement.id = "three-game"
 
-  const { composer, pixelPass } = setupPostProcessing(renderer, scene, camera);
+  const { composer, pixelPass, noisePass } = setupPostProcessing(renderer, scene, camera);
   scene.background = null
+  if (boomer) pixelPass.uniforms.pixelSize.value = width < 800 ? 4.0 : 10.0
+  else if (retro) pixelPass.uniforms.pixelSize.value = width < 800 ? 2.0 : 4.0
+  else pixelPass.uniforms.pixelSize.value = 1.0
+  //else pixelPass.enabled = false
+  noisePass.enabled = noise
+  noisePass.uniforms.amount.value = 0.5
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -137,10 +143,6 @@ function runGame(startLevel, level = 1) {
   }
 
   const canvas = renderer.domElement; // Get your Three.js canvas element
-  //canvas.addEventListener('touchmove', (event) => {
-  //  event.preventDefault();
-  //}, { passive: false });
-
   // Add event listeners for both mouse and touch
   canvas.addEventListener('mouseup', handleInputEnd);
   canvas.addEventListener('mousedown', handleInputStart);
@@ -150,18 +152,19 @@ function runGame(startLevel, level = 1) {
 
   const clock = new THREE.Clock();
 
-  function animate() {
+  function animate(time) {
     animationFrameId = requestAnimationFrame(animate)
     const delta = clock.getDelta()
 
     character.playerUpdate(chars, charMixers, spellFlag, delta)
-    character.aiTurn(chars, charMixers, delta)
+    character.aiTurn(chars, charMixers, delta, startLevel)
     updateGame()
 
     charMixers.forEach(m => m.update(delta))
     camFollowPlayer()
     controls.update()
     //renderer.render(scene, camera)
+    noisePass.uniforms.time.value = time * 0.001
     composer.render()
   }
 
@@ -207,7 +210,10 @@ function runGame(startLevel, level = 1) {
     }
   }
 
-  function spellChant(word) {
+  let touchDetected = false
+  function spellChant(word, touch=true) {
+    if (touch) touchDetected=true
+    if (!touch && touchDetected) return // stop double clicking with touch
     if (word === chant.slice(-1)) return
     chant += word
 

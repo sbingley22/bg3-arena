@@ -6,8 +6,5 @@ A simple Baldurs Gate 3 spin off where you play as Shadow Heart and have to defe
 Cast a spell by hovering over the chant buttons in the correct order.
 
 To do:
-Add health, magic ui bars.
-Magic slowly replenishes.
-Get ai to attack.
-Possibly introduce 2 more levels (town, cave)
-Add drow and goblins as basic grunts.
+Change Pixelation based on width
+No pixelation option

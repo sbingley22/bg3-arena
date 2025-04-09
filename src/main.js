@@ -3,6 +3,9 @@ import * as Game from './game.js'
 const game = document.getElementById('game')
 const cutscenes = document.getElementById('cutscenes')
 const mainMenu = document.getElementById('main-menu')
+const retroCheckbox = document.getElementById('retroCheckbox')
+const boomerCheckbox = document.getElementById('boomerCheckbox')
+const noiseCheckbox = document.getElementById('noiseCheckbox')
 
 function removeThreeScene() {
   const threeGame = document.getElementById('three-game')
@@ -50,21 +53,21 @@ function startLevel(level) {
   }
   else if (level === 2) {
     showGame()
-    Game.runGame(startLevel, 2)
+    Game.runGame(startLevel, 2, retroCheckbox.checked, boomerCheckbox.checked, noiseCheckbox.checked)
   }
   else if (level === 3) {
     showCutscene(3)
   }
   else if (level === 4) {
     showGame()
-    Game.runGame(startLevel, 4)
+    Game.runGame(startLevel, 4, retroCheckbox.checked, boomerCheckbox.checked, noiseCheckbox.checked)
   }
   else if (level === 5) {
     showCutscene(5)
   }
   else if (level === 6) {
     showGame()
-    Game.runGame(startLevel, 6)
+    Game.runGame(startLevel, 6, retroCheckbox.checked, boomerCheckbox.checked, noiseCheckbox.checked)
   }
   else if (level === 7) {
     showCutscene(7)

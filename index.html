@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Game</title>
+    <title>Baldur's Arena: Shadowheart</title>
     <link rel="stylesheet" type="text/css" href="./src/style.css">
   </head>
   <body>
@@ -16,14 +16,14 @@
       </div>
 
       <p id="hud-info"></p>
+      <p id="hud-status">Mana: 100</p>
 
-      <!--<button type="button" ontouchstart="spellChant('*')" onmouseover="spellChant('*')" class="b1">*</button>-->
-      <button type="button" onmouseover="spellChant('*')" class="b1">*</button>
-      <button type="button" onmouseover="spellChant('~')" class="b2">~</button>
-      <button type="button" onmouseover="spellChant('?')" class="b3">?</button>
-      <button type="button" onmouseover="spellChant('#')" class="b4">#</button>
+      <button type="button" ontouchstart="spellChant('*')" onmouseenter="spellChant('*', false)" class="b1">*</button>
+      <button type="button" ontouchend="spellChant('~')" onmouseenter="spellChant('~', false)" class="b2">~</button>
+      <button type="button" ontouchstart="spellChant('?')" onmouseenter="spellChant('?', false)" class="b3">?</button>
+      <!--<button type="button" onmouseover="spellChant('#')" class="b4">#</button>-->
 
-      <img class="char-face" src="src/assets/shart-face.png" alt="">
+      <img id="char-face" src="src/assets/shart-face.png" alt="">
     </div>
 
     <div id="cutscenes">
@@ -48,7 +48,7 @@
       </div>
 
       <div id="cutscene-5" class="cutscene" onclick="startLevel(6)">
-        <img src="./astarion-full.png" alt="">
+        <img src="./gale-full.png" alt="">
         <div>
           <p>That was tough. Can't believe I got out alive.</p>
           <p>The Blade of Frontiers, Demons, Devils, and that Barbarian Karlach.</p>
@@ -60,7 +60,7 @@
       </div>
 
       <div id="cutscene-7" class="cutscene" onclick="startLevel(0)">
-        <img src="./karlach-full.png" alt="">
+        <img src="./shart-hand.png" alt="">
         <div>
           <p>I did it!</p>
           <p>I defeated them!</p>
@@ -76,6 +76,14 @@
         <span>
           <p>Shadowheart has been tasked by Lady Shaar to eliminate enemies of the dark.</p>
           <p>Cast spells by hovering over the correct syllabuls. RMB to cancel current chant.</p>
+        </span>
+        <span>
+          <label for="retro">Retro</label>
+          <input type="checkbox" id="retroCheckbox" name="retro" value="false">
+          <label for="boomer">Boomer</label>
+          <input type="checkbox" id="boomerCheckbox" name="boomer" value="false">
+          <label for="noise">Noise</label>
+          <input type="checkbox" id="noiseCheckbox" name="noise" value="false">
         </span>
         <button type="button" onclick="startLevel(1)">Begin</button>
       </div>
